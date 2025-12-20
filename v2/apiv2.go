@@ -6,12 +6,13 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"osukim-labs/osu-api-wrapper/client"
-	"osukim-labs/osu-api-wrapper/v2/interfaces"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/osukim-labs/osu-api-wrapper-go/client"
+	"github.com/osukim-labs/osu-api-wrapper-go/v2/interfaces"
 )
 
 type OsuV2API struct {
