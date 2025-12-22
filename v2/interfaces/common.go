@@ -1,5 +1,11 @@
 package interfaces
 
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+)
+
 type Covers struct {
 	Cover       string `json:"cover"`
 	Cover2X     string `json:"cover@2x"`
@@ -12,14 +18,14 @@ type Covers struct {
 }
 
 type RequiredMeta struct {
-	MainRuleset    int `json:"main_ruleset"`
-	NonMainRuleset int `json:"non_main_ruleset"`
+	MainRuleset    *int `json:"main_ruleset"`
+	NonMainRuleset *int `json:"non_main_ruleset"`
 }
 
 type NominationsSummary struct {
-	Current              int          `json:"current"`
-	EligibleMainRulesets []string     `json:"eligible_main_rulesets"`
-	RequiredMeta         RequiredMeta `json:"required_meta"`
+	Current              *int          `json:"current"`
+	EligibleMainRulesets *[]string     `json:"eligible_main_rulesets"`
+	RequiredMeta         *RequiredMeta `json:"required_meta"`
 }
 
 type Availability struct {
@@ -38,6 +44,36 @@ type Owners struct {
 }
 
 type Hype struct {
-	Current  int `json:"current"`
-	Required int `json:"required"`
+	Current  *int `json:"current"`
+	Required *int `json:"required"`
+}
+
+type FlexibleTime struct {
+	time.Time
+}
+
+func (ft *FlexibleTime) UnmarshalJSON(b []byte) error {
+	// Try to unmarshal as a number (Unix milliseconds)
+	var ms int64
+	if err := json.Unmarshal(b, &ms); err == nil {
+		ft.Time = time.Unix(0, ms*int64(time.Millisecond))
+		return nil
+	}
+
+	// Try to unmarshal as a string (ISO 8601)
+	var s string
+	if err := json.Unmarshal(b, &s); err == nil {
+		if s == "" {
+			ft.Time = time.Time{}
+			return nil
+		}
+		t, err := time.Parse(time.RFC3339, s)
+		if err != nil {
+			return err
+		}
+		ft.Time = t
+		return nil
+	}
+
+	return fmt.Errorf("cannot unmarshal %s as FlexibleTime", string(b))
 }

@@ -12,7 +12,7 @@ import (
 
 type Client struct {
 	BaseUrl       string
-	Timeout       int
+	Timeout       time.Duration
 	Authorization string
 	httpClient    *http.Client
 }
@@ -25,7 +25,7 @@ type HttpClientParam struct {
 	Accept      string
 }
 
-func NewClient(baseUrl string, timeout int, authorization string) *Client {
+func NewClient(baseUrl string, timeout time.Duration, authorization string) *Client {
 	return &Client{
 		BaseUrl:       baseUrl,
 		Timeout:       timeout,
@@ -120,7 +120,7 @@ func (c *Client) createHttpRequest(ctx context.Context, param HttpClientParam) (
 		req.Header.Set("Authorization", "Bearer "+c.Authorization)
 	}
 
-	req.Header.Set("User-Agent", "osu-api-wrapper/1.0")
+	req.Header.Set("User-Agent", "osuapi-wrapper-go/1.0")
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
